@@ -1,8 +1,10 @@
-// require("dotenv").config();
+require("dotenv").config();
 const express = require("express");
 const connectDB = require("./Utils/db");
-const multer = require('multer')
+const multer = require('multer');
 const app = express();
+const auth = require('./Routers/auth-route')
+const restaurant = require('./Routers/restaurant-route')
 PORT = 6000;
 app.use(express.json());
 const User = require("./models/User")
@@ -39,6 +41,10 @@ app.post('/upload', upload.single('profileImage'), async (req, res) => {
         res.status(500).send(error.message);
     }
 });
+
+app.use('/api/auth',auth);
+app.use('/api/restaurant',restaurant);
+
 
 connectDB().then(() => {
   try {
