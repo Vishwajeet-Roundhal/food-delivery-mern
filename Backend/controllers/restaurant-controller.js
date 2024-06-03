@@ -3,13 +3,14 @@ const Restaurant = require("../models/Restaurant");
 const createRestaurant = async (req, res) => {
   try {
     const ownerId = req.params.ownerId;
-    const { restaurant_name, address, phone, cuisine } = req.body;
+    const { restaurant_name, address, phone, cuisine  , restaurant_img} = req.body;
     const newRestaurant = new Restaurant({
       restaurant_name,
       address,
       phone,
       cuisine,
-      owner: ownerId
+      owner: ownerId,
+      restaurant_img
     });
     const savedRestaurant = await newRestaurant.save();
     res.status(200).json(savedRestaurant);
@@ -28,6 +29,18 @@ const getRestaurant = async (req, res) => {
     res.status(500).json({ msg: "Internal server error" });
   }
 };
+
+const getRestaurantById = async (req,res) => {
+  try {
+    const restaurantId = req.params.restaurantId;
+    const restaurant = await Restaurant.findById(restaurantId);
+    if (!restaurant) return res.status(404).json({msg:"no restaurant found"})
+
+    res.status(200).json(restaurant);
+  } catch (error) {
+    res.status(500).json({msg:"Internal server error"})
+  }
+}
 
 const updateRestaurant = async (req, res) => {
   try {

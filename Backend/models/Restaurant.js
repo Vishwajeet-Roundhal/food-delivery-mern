@@ -6,6 +6,7 @@ const restaurantSchema = new Schema({
     address: { type: String, required: true },
     phone: { type: String, required: true },
     cuisine: { type: String, required: true },
+    restaurant_img: { type: String },
     menu: { type: Schema.Types.ObjectId, ref: 'Menu' },
     owner: { type: Schema.Types.ObjectId, ref: 'User' , required: true },
     createdAt: { type: Date, default: Date.now },
