@@ -7,7 +7,8 @@ const restaurantSchema = new Schema({
     phone: { type: String, required: true },
     cuisine: { type: String, required: true },
     restaurant_img: { type: String },
-    menu: { type: Schema.Types.ObjectId, ref: 'Menu' },
+    review_rating: { type: Number},
+    location: { type: { type: String, enum: ['Point'], default: 'Point' }, coordinates: [Number] }, 
     owner: { type: Schema.Types.ObjectId, ref: 'User' , required: true },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }

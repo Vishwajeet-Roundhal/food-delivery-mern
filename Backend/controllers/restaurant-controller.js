@@ -3,14 +3,15 @@ const Restaurant = require("../models/Restaurant");
 const createRestaurant = async (req, res) => {
   try {
     const ownerId = req.params.ownerId;
-    const { restaurant_name, address, phone, cuisine  , restaurant_img} = req.body;
+    const { restaurant_name, address, phone, cuisine, restaurant_img } =
+      req.body;
     const newRestaurant = new Restaurant({
       restaurant_name,
       address,
       phone,
       cuisine,
       owner: ownerId,
-      restaurant_img
+      restaurant_img,
     });
     const savedRestaurant = await newRestaurant.save();
     res.status(200).json(savedRestaurant);
@@ -30,17 +31,18 @@ const getRestaurant = async (req, res) => {
   }
 };
 
-const getRestaurantById = async (req,res) => {
+const getRestaurantById = async (req, res) => {
   try {
     const restaurantId = req.params.restaurantId;
     const restaurant = await Restaurant.findById(restaurantId);
-    if (!restaurant) return res.status(404).json({msg:"no restaurant found"})
+    if (!restaurant)
+      return res.status(404).json({ msg: "no restaurant found" });
 
     res.status(200).json(restaurant);
   } catch (error) {
-    res.status(500).json({msg:"Internal server error"})
+    res.status(500).json({ msg: "Internal server error" });
   }
-}
+};
 
 const updateRestaurant = async (req, res) => {
   try {
@@ -69,19 +71,94 @@ const updateRestaurant = async (req, res) => {
   }
 };
 
+const deleteRestaurant = async (req, res) => {
+  try {
+    const restaurant = await Restaurant.findByIdAndDelete(req.params.id);
 
-const deleteRestaurant = async(req,res) => {
-    try {
-        const restaurant = await Restaurant.findByIdAndDelete(req.params.id);
-
-        if (!restaurant) {
-            return res.status(404).send();
-        }
-
-        res.send(restaurant);
-    } catch (error) {
-        res.status(500).json({msg:"Internal server error"})
+    if (!restaurant) {
+      return res.status(404).send();
     }
-}
 
-module.exports = { createRestaurant , updateRestaurant, getRestaurant , deleteRestaurant }
+    res.send(restaurant);
+  } catch (error) {
+    res.status(500).json({ msg: "Internal server error" });
+  }
+};
+
+const getRestaurantByCuisine = async (req, res) => {
+  try {
+    const { cuisine } = req.query;
+
+    if (!cuisine) {
+      return res.status(400).json({ msg: "Cuisine type is required" });
+    }
+
+    const restaurants = await Restaurant.find({ cuisine: cuisine });
+
+    if (restaurants.length === 0) {
+      return res
+        .status(404)
+        .json({ msg: "No restaurants found for this cuisine" });
+    }
+
+    res.status(200).json(restaurants);
+  } catch (error) {
+    res.status(500).json({ msg: "Internal server error" });
+  }
+};
+
+const searchRestaurant = async (req, res) => {
+  try {
+    const { searchKey } = req.query;
+    const searchRegex = new RegExp(searchKey, "i");
+
+    const restaurants = await Restaurant.find({ restaurant_name: searchRegex });
+    // restaurants = restaurants.sort((a, b) => {
+    //   if (a.review_rating > b.review_rating) return -1;
+    //   if (a.review_rating < b.review_rating) return 1;
+    //   return 0;
+    // });
+
+    res.status(200).json(restaurants);
+  } catch (error) {
+    res.status(500).json({ msg: "Internal server error" });
+  }
+};
+
+const restaurantsByLocation = async (req, res) => {
+  try {
+    const { longitude, latitude, page = 1, limit = 10 } = req.body;
+    const skip = (page - 1) * limit;
+    const restaurants = await Restaurant.find({
+      location: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          },
+          $maxDistance: 25000,
+        },
+      },
+    })
+      .skip(skip)
+      .limit(limit);
+    res.status(200).json({
+      restaurants,
+      currentPage: page,
+      totalPages: Math.ceil(restaurants.length / limit),
+    });
+  } catch (error) {
+    res.status(500).json({ msg: "internal server error" });
+  }
+};
+
+module.exports = {
+  createRestaurant,
+  updateRestaurant,
+  getRestaurant,
+  deleteRestaurant,
+  getRestaurantById,
+  getRestaurantByCuisine,
+  searchRestaurant,
+  restaurantsByLocation,
+};
