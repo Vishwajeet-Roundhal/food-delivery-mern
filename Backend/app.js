@@ -5,7 +5,7 @@ const multer = require('multer');
 const app = express();
 const auth = require('./Routers/auth-route')
 const restaurant = require('./Routers/restaurant-route')
-PORT = 6000;
+PORT = 6005;
 app.use(express.json());
 const User = require("./models/User")
 

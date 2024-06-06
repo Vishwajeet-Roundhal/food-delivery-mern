@@ -3,8 +3,13 @@ const Restaurant = require("../models/Restaurant");
 const createRestaurant = async (req, res) => {
   try {
     const ownerId = req.params.ownerId;
-    const { restaurant_name, address, phone, cuisine, restaurant_img } =
-      req.body;
+    const {
+      restaurant_name,
+      address,
+      phone,
+      cuisine,
+      restaurant_img,
+    } = req.body;
     const newRestaurant = new Restaurant({
       restaurant_name,
       address,
@@ -125,33 +130,6 @@ const searchRestaurant = async (req, res) => {
   }
 };
 
-const restaurantsByLocation = async (req, res) => {
-  try {
-    const { longitude, latitude, page = 1, limit = 10 } = req.body;
-    const skip = (page - 1) * limit;
-    const restaurants = await Restaurant.find({
-      location: {
-        $near: {
-          $geometry: {
-            type: "Point",
-            coordinates: [longitude, latitude],
-          },
-          $maxDistance: 25000,
-        },
-      },
-    })
-      .skip(skip)
-      .limit(limit);
-    res.status(200).json({
-      restaurants,
-      currentPage: page,
-      totalPages: Math.ceil(restaurants.length / limit),
-    });
-  } catch (error) {
-    res.status(500).json({ msg: "internal server error" });
-  }
-};
-
 module.exports = {
   createRestaurant,
   updateRestaurant,
@@ -160,5 +138,4 @@ module.exports = {
   getRestaurantById,
   getRestaurantByCuisine,
   searchRestaurant,
-  restaurantsByLocation,
 };
