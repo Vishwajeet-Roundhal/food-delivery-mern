@@ -22,7 +22,7 @@ userSchema.methods.generateToken = async function() {
         email: this.email,
         isAdmin: this.isAdmin,
       },
-     process.env.SECRET_KEY,
+     process.env.secret,
       { expiresIn: "30d" }
       );
     } catch (error) {

@@ -52,7 +52,7 @@ const getRestaurantById = async (req, res) => {
 const updateRestaurant = async (req, res) => {
   try {
     const restaurantId = req.params.restaurantId;
-    const { restaurant_name, address, phone, cuisine } = req.body;
+    const { restaurant_name, address, phone, cuisine,review_rating } = req.body;
     const updatedRestaurant = await Restaurant.findByIdAndUpdate(
       restaurantId,
       {
@@ -62,6 +62,7 @@ const updateRestaurant = async (req, res) => {
           phone,
           cuisine,
           updatedAt: new Date(),
+          review_rating
         },
       },
       { new: true }

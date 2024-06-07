@@ -12,7 +12,7 @@ const userAuth = async (req, res, next) => {
 
     const bearerToken = token.replace("Bearer", "").trim();
 
-    const isVerify = jwt.verify(bearerToken, process.env.SECRET_KEY);
+    const isVerify = jwt.verify(bearerToken, process.env.secret);
 
     const userData = await User.findOne({ email: isVerify.email });
 
@@ -48,11 +48,12 @@ const adminValidator = async (req,res,next) => {
 const authorizeOwner = async (req, res, next) => {
     try {
         const token = await req.header('Authorization').replace('Bearer ', '');
-        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        const decoded = jwt.verify(token, process.env.secret);
         const userId = decoded._id;
 
         const restaurantId = req.params.restaurantId;
         const restaurant = await Restaurant.findById(restaurantId);
+        console.log(restaurant);
 
         if (!restaurant) {
             return res.status(404).json({ msg: 'Restaurant not found' });

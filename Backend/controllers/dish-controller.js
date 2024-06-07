@@ -1,4 +1,4 @@
-const Menu = require('../models/Menu')
+const Menu = require("../models/Menu");
 const Dish = require("../models/Dish");
 
 const createDish = async (req, res) => {
@@ -36,52 +36,92 @@ const createDish = async (req, res) => {
   }
 };
 
-const getDishes = async (req, res) => {
+const updateMenu = async (req, res) => {
   try {
-  
-  const restaurantId = req.params.restaurantId;
-  const menu = await Menu.findOne({ restaurant: restaurantId }).populate('dishes');
+    const restaurantId = req.params.restaurantId;
 
-  if(!menu) return res.status(404).json({msg:"NO menu found"})
-  res.status(200).json(menu.dishes);
-}
-  catch (error) {
-    res.status(500).json({msg:"internal server error"})
+    const { offer } = req.body;
+
+    const updatedMenu = await Menu.findOneAndUpdate(
+      { restaurant: restaurantId },
+      {
+        $set: {
+          offer: offer,
+        },
+      },
+      { new: true }
+    );
+    if (!updatedMenu) return res.status(404).json({ msg: "no update found" });
+
+    res.status(200).json(updatedMenu);
+  } catch (error) {
+    res.status(500).json({ msg: "internal server error" });
   }
 };
 
-const updateDish = async (req,res) => {
+const getDishes = async (req, res) => {
+  try {
+    const restaurantId = req.params.restaurantId;
+    const menu = await Menu.findOne({ restaurant: restaurantId }).populate(
+      "dishes"
+    );
+
+    if (!menu) return res.status(404).json({ msg: "NO menu found" });
+    res.status(200).json(menu.dishes);
+  } catch (error) {
+    res.status(500).json({ msg: "internal server error" });
+  }
+};
+
+const updateDish = async (req, res) => {
   try {
     const dishId = req.params.dishId;
-    const { name , description, price, image } = req.body;
+    const { name, description, price, image } = req.body;
 
-    const updatedData = await Dish.findByIdAndUpdate(dishId,
+    const updatedData = await Dish.findByIdAndUpdate(
+      dishId,
       {
-        name,description,price,image
+        name,
+        description,
+        price,
+        image,
       },
-      { new : true}
+      { new: true }
     );
     res.status(200).json(updatedData);
   } catch (error) {
-    res.status(500).json({msg:"Internal server error"})
+    res.status(500).json({ msg: "Internal server error" });
   }
-}
+};
 
-const deleteDish = async(req,res) => {
+const deleteDish = async (req, res) => {
   try {
     const dishId = req.params.dishId;
-    const deletedDish = await Dish.findByIdAndDelete(
-      dishId
-    );
+    const deletedDish = await Dish.findByIdAndDelete(dishId);
 
     if (!deletedDish) {
       return res.status(404).json({ msg: "Dish not found" });
     }
 
-    res.status(200).json({msg:"dish deleted successfully"});
+    res.status(200).json({ msg: "dish deleted successfully" });
   } catch (error) {
-    res.status(500).json({msg:"Internal server error"})
+    res.status(500).json({ msg: "Internal server error" });
+  }
+};
+
+
+const searchDish = async(req,res) => {
+  try {
+    const { searchKey } = req.query;
+    const restaurantId = req.params.restaurantId;
+    const searchRegex = new RegExp(searchKey, "i");
+
+    const dishes = await Dish.find({ name: searchRegex, restaurant: restaurantId });
+    res.status(200).json(dishes);
+    
+  } catch (error) {
+    res.status(500).json({msg:"internal server error"})
   }
 }
 
-module.exports = { createDish, getDishes , updateDish , deleteDish};
+module.exports = { createDish, getDishes, updateDish, deleteDish,updateMenu , searchDish };
