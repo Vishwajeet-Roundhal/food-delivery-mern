@@ -1,5 +1,6 @@
 const Order = require("../models/Order");
 const OrderItem = require("../models/OrderItem");
+const { sendEmail } = require("../Utils/emailService");
 
 const createOrder = async (req, res) => {
   try {
@@ -38,34 +39,71 @@ const getAllOrdersByUser = async (req, res) => {
   }
 };
 
-const getAllOrders = async(req,res) => {
-    try {
-        const orders = await Order.find();
-        if(!orders) return res.status(404).json({msg:"no orders found"})
-        
-        res.status(200).json(orders)
-    } catch (error) {
-        res.status(500).json({msg:"internal server error"})
-    }
-}
+const getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.find();
+    if (!orders) return res.status(404).json({ msg: "no orders found" });
+
+    res.status(200).json(orders);
+  } catch (error) {
+    res.status(500).json({ msg: "internal server error" });
+  }
+};
 
 const updateOrderById = async (req, res) => {
   try {
     const orderId = req.params.orderId;
     const { status, paymentStatus } = req.body;
-
-    const order = await Order.findById(orderId);
-
+    console.log(status);
+    const order = await Order.findById(orderId).populate("user");
     order.status = status;
-    order.paymentStauts = paymentStatus;
+    console.log(order.status);
+    order.paymentStatus = paymentStatus; 
+    console.log(order);
 
     await order.save();
+
+    const userEmail = order.user.email;
+    console.log(userEmail);
+
+    const emailSubject = "Your Swiggy Order Status Update";
+    const emailText = `
+      Dear ${order.user.name},
+
+      We wanted to inform you that the status of your order #${orderId} has been updated.
+
+      Current Order Status: ${status}
+      Payment Status: ${paymentStatus}
+
+      Here are the details of your order:
+      Items Ordered: ${order.items.join(", ")}
+      Total Price: ₹${order.totalPrice}
+      Delivery Address: ${order.deliveryAddress}
+
+      Thank you for ordering with Swiggy. If you have any questions or need further assistance, please feel free to contact our support team.
+
+      Best regards,
+      The Swiggy Team
+    `;
+
+    await sendEmail(
+      userEmail,
+      emailSubject,
+      emailText
+    );
+
     res.status(200).json(order);
   } catch (error) {
     res.status(500).json({ msg: "internal server error" });
   }
 };
 
+module.exports = {
+  createOrder,
+  getAllOrdersByUser,
+  updateOrderById,
+  getAllOrders,
+};
 
 
-module.exports = { createOrder, getAllOrdersByUser , updateOrderById,getAllOrders };
+ 

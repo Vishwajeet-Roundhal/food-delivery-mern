@@ -42,18 +42,40 @@ const updateMenu = async (req, res) => {
 
     const { offer } = req.body;
 
-    const updatedMenu = await Menu.findOneAndUpdate(
-      { restaurant: restaurantId },
-      {
-        $set: {
-          offer: offer,
-        },
-      },
-      { new: true }
+    const discountMatch = offer.match(/(\d+)%/);
+    if (!discountMatch) {
+      return res.status(400).json({ msg: "Invalid offer format" });
+    }
+    const discountPercentage = parseFloat(discountMatch[1]);
+    const menu = await Menu.findOne({ restaurant: restaurantId }).populate(
+      "dishes"
     );
-    if (!updatedMenu) return res.status(404).json({ msg: "no update found" });
 
-    res.status(200).json(updatedMenu);
+    if (!menu) {
+      return res.status(404).json({ msg: "No menu found for the restaurant" });
+    }
+
+    // Update each dish with the new price and offer
+    for (const dish of menu.dishes) {
+      const originalPrice = dish.price;
+      const newPrice =
+        originalPrice - originalPrice * (discountPercentage / 100);
+
+      await Dish.updateOne(
+        { _id: dish._id },
+        {
+          $set: {
+            price: newPrice.toFixed(2),
+          },
+        }
+      );
+    }
+
+    // Update the menu's offer
+    menu.offer = offer;
+    await menu.save();
+
+    res.status(200).json({ msg: "offer applied sucessfully" });
   } catch (error) {
     res.status(500).json({ msg: "internal server error" });
   }
@@ -109,19 +131,27 @@ const deleteDish = async (req, res) => {
   }
 };
 
-
-const searchDish = async(req,res) => {
+const searchDish = async (req, res) => {
   try {
     const { searchKey } = req.query;
     const restaurantId = req.params.restaurantId;
     const searchRegex = new RegExp(searchKey, "i");
 
-    const dishes = await Dish.find({ name: searchRegex, restaurant: restaurantId });
+    const dishes = await Dish.find({
+      name: searchRegex,
+      restaurant: restaurantId,
+    });
     res.status(200).json(dishes);
-    
   } catch (error) {
-    res.status(500).json({msg:"internal server error"})
+    res.status(500).json({ msg: "internal server error" });
   }
-}
+};
 
-module.exports = { createDish, getDishes, updateDish, deleteDish,updateMenu , searchDish };
+module.exports = {
+  createDish,
+  getDishes,
+  updateDish,
+  deleteDish,
+  updateMenu,
+  searchDish,
+};

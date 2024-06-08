@@ -7,7 +7,8 @@ const auth = require('./Routers/auth-route')
 const restaurant = require('./Routers/restaurant-route')
 PORT = 6005;
 app.use(express.json());
-const User = require("./models/User")
+const User = require("./models/User");
+const { userAuth } = require("./middleware/Auth-middleware");
 
 // Configure multer storage
 const storage = multer.diskStorage({
@@ -23,13 +24,13 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Endpoint to handle file upload
-app.post('/upload', upload.single('profileImage'), async (req, res) => {
+app.post('/upload', userAuth ,upload.single('profileImage'), async (req, res) => {
     try {
         // The file is available in req.file
         const profileImageUrl = `/uploads/${req.file.filename}`;
 
         // Save the profile image URL to the user document in the database
-        const user = await User.findById(req.body._id);
+        const user = await User.findById(req.user._id);
         if (!user) {
             return res.status(404).send('User not found');
         }

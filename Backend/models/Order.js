@@ -8,7 +8,7 @@ const orderSchema = new Schema({
     totalPrice: { type: Number, required: true },
     status: { type: String, enum: ['Pending', 'In Progress', 'Delivered', 'Cancelled'], default: 'Pending' },
     deliveryAddress: { type: String, required: true},
-    paymentStauts: { type: String , required: true, enum: ["pending","paid","failed"], default: "pending"},
+    paymentStatus: { type: String , required: true, enum: ["pending","paid","failed"], default: "pending"},
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 });

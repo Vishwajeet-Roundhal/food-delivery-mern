@@ -10,12 +10,15 @@ Router.route('/restaurants').get(restaurantController.getRestaurant);
 Router.route('/updateRestaurant/:restaurantId').patch(authorizeOwner,restaurantController.updateRestaurant)
 Router.route('/deleteRestaurant/:id').delete(authorizeOwner,restaurantController.deleteRestaurant)
 Router.route('/searchRestaurant').get(restaurantController.searchRestaurant)
+Router.route('/getRestaurantByCity').get(restaurantController.getRestaurantByCity)
 
-
+//Dish routes
 Router.route('/createDish/:restaurantId').post(dishController.createDish)
 Router.route('/getDishes/:restaurantId').get(dishController.getDishes);
+Router.route('/updateMenu/:restaurantId').post(dishController.updateMenu)
 
 
-
+//Order routes
 Router.route('/createOrder/:restaurantId').post(userAuth,orderController.createOrder);
+Router.route('/updateOrder/:orderId').post(orderController.updateOrderById)
 module.exports = Router

@@ -3,13 +3,8 @@ const Restaurant = require("../models/Restaurant");
 const createRestaurant = async (req, res) => {
   try {
     const ownerId = req.params.ownerId;
-    const {
-      restaurant_name,
-      address,
-      phone,
-      cuisine,
-      restaurant_img,
-    } = req.body;
+    const { restaurant_name, address, phone, cuisine, restaurant_img } =
+      req.body;
     const newRestaurant = new Restaurant({
       restaurant_name,
       address,
@@ -52,7 +47,8 @@ const getRestaurantById = async (req, res) => {
 const updateRestaurant = async (req, res) => {
   try {
     const restaurantId = req.params.restaurantId;
-    const { restaurant_name, address, phone, cuisine,review_rating } = req.body;
+    const { restaurant_name, address, phone, cuisine, review_rating } =
+      req.body;
     const updatedRestaurant = await Restaurant.findByIdAndUpdate(
       restaurantId,
       {
@@ -62,7 +58,7 @@ const updateRestaurant = async (req, res) => {
           phone,
           cuisine,
           updatedAt: new Date(),
-          review_rating
+          review_rating,
         },
       },
       { new: true }
@@ -131,6 +127,17 @@ const searchRestaurant = async (req, res) => {
   }
 };
 
+const getRestaurantByCity = async (req, res) => {
+  try {
+    const { city } = req.query;
+    if (!city) return res.status(404).json({ msg: "no city found" });
+    const restaurants = await Restaurant.find({ address: { $regex: city, $options: 'i' } });
+    res.json(restaurants);
+  } catch (error) {
+    res.status(500).json({ msg: "internal server error" });
+  }
+};
+
 module.exports = {
   createRestaurant,
   updateRestaurant,
@@ -139,4 +146,5 @@ module.exports = {
   getRestaurantById,
   getRestaurantByCuisine,
   searchRestaurant,
+  getRestaurantByCity,
 };
