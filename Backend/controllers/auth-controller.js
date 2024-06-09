@@ -4,10 +4,10 @@ const { sendEmail } = require("../Utils/emailService");
 
 const register = async (req, res) => {
   try {
-    const { name, email, password, phone, username, addresses, profile_url } =
+    const { name, email, password, phone, username, addresses, profile_url  } =
       req.body;
 
-    if (!name || !email || !password) {
+    if (!name || !email || !password ) {
       return res.status(400).json({ msg: "Please fill all fields" });
     }
     const userExists = await User.findOne({ email: email });
@@ -18,6 +18,10 @@ const register = async (req, res) => {
     const salt = 10;
     const pass = await bcrypt.hash(password, salt);
 
+    const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
+
+    await sendEmail(email,'Your OTP',otp);
+
     const newUser = await User.create({
       name,
       email,
@@ -26,11 +30,9 @@ const register = async (req, res) => {
       username,
       addresses,
       profile_url,
+      otp: otp,
+      isVerified: false,
     });
-
-    if (!name || !email || !password) {
-      return res.status(400).json({ msg: "Please fill all fields" });
-    }
 
     res.status(200).json({
       newUser,
@@ -40,6 +42,34 @@ const register = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json("server error");
+  }
+};
+
+const verifyOTP = async (req, res,next) => {
+  try {
+    const { email, otp } = req.body;
+
+    const user = await User.findOne({email: email});
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const receivedOTP = parseInt(otp);
+    // Check if the OTP matches
+    if (user.otp !== receivedOTP) {
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
+
+    user.isVerified = true;
+    await user.save();
+    req.user = user;
+
+    res.status(200).json({ message: 'OTP verified successfully' });
+    next();
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -112,4 +142,4 @@ const updateUser = async (req, res) => {
   }
 };
 
-module.exports = { register, login , updateUser};
+module.exports = { register, login , updateUser , verifyOTP};

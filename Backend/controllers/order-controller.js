@@ -1,6 +1,7 @@
 const Order = require("../models/Order");
 const OrderItem = require("../models/OrderItem");
 const { sendEmail } = require("../Utils/emailService");
+const mongoose = require('mongoose');
 
 const createOrder = async (req, res) => {
   try {
@@ -58,7 +59,7 @@ const updateOrderById = async (req, res) => {
     const order = await Order.findById(orderId).populate("user");
     order.status = status;
     console.log(order.status);
-    order.paymentStatus = paymentStatus; 
+    order.paymentStatus = paymentStatus;
     console.log(order);
 
     await order.save();
@@ -86,11 +87,7 @@ const updateOrderById = async (req, res) => {
       The Swiggy Team
     `;
 
-    await sendEmail(
-      userEmail,
-      emailSubject,
-      emailText
-    );
+    await sendEmail(userEmail, emailSubject, emailText);
 
     res.status(200).json(order);
   } catch (error) {
@@ -98,12 +95,50 @@ const updateOrderById = async (req, res) => {
   }
 };
 
+const getRestaurantAllOrders = async (req, res) => {
+  try {
+    const restaurantId = req.params.restaurantId;
+    const orders = await Order.find({ restaurant: restaurantId });
+    if (!orders) return res.status(500).json({ msg: "internal server error" });
+
+    res.status(200).json(orders);
+  } catch (error) {
+    res.status(500).json({ msg: "internal server error" });
+  }
+};
+
+const restaurantSales = async (req, res) => {
+  try {
+    const restaurantId = req.params.restaurantId;
+    const orders = await Order.find({ 
+      restaurant: restaurantId, 
+      paymentStatus: 'paid' 
+    });
+
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({ msg: "No sales data found for this restaurant" });
+    }
+
+    const totalSales = orders.reduce((sum, order) => sum + order.totalPrice, 0);
+
+    res.status(200).json({ totalSales });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "internal server error" });
+  }
+};
+
+
+
+
+
+
+
 module.exports = {
   createOrder,
   getAllOrdersByUser,
   updateOrderById,
   getAllOrders,
+  getRestaurantAllOrders,
+  restaurantSales,
 };
-
-
- 

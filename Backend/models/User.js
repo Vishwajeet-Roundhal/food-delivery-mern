@@ -11,6 +11,8 @@ const userSchema = new Schema({
     phone: { type: String },
     addresses: [{ type : String }],
     isAdmin : { type: Boolean , default: false},
+    otp: { type: Number } , 
+    isVerified: { type: Boolean , default: false},
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 });

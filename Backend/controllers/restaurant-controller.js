@@ -1,9 +1,12 @@
+const { attachDistance } = require("../middleware/distance");
+const Menu = require("../models/Menu");
+const Order = require("../models/Order");
 const Restaurant = require("../models/Restaurant");
 
 const createRestaurant = async (req, res) => {
   try {
     const ownerId = req.params.ownerId;
-    const { restaurant_name, address, phone, cuisine, restaurant_img } =
+    const { restaurant_name, address, phone, cuisine, restaurant_img, city , latitude, longitude } =
       req.body;
     const newRestaurant = new Restaurant({
       restaurant_name,
@@ -12,6 +15,9 @@ const createRestaurant = async (req, res) => {
       cuisine,
       owner: ownerId,
       restaurant_img,
+      city,
+      latitude,
+      longitude
     });
     const savedRestaurant = await newRestaurant.save();
     res.status(200).json(savedRestaurant);
@@ -47,7 +53,7 @@ const getRestaurantById = async (req, res) => {
 const updateRestaurant = async (req, res) => {
   try {
     const restaurantId = req.params.restaurantId;
-    const { restaurant_name, address, phone, cuisine, review_rating } =
+    const { restaurant_name, address, phone, cuisine, review_rating, city , latitude , longitude} =
       req.body;
     const updatedRestaurant = await Restaurant.findByIdAndUpdate(
       restaurantId,
@@ -59,6 +65,9 @@ const updateRestaurant = async (req, res) => {
           cuisine,
           updatedAt: new Date(),
           review_rating,
+          city,
+          latitude,
+          longitude
         },
       },
       { new: true }
@@ -131,12 +140,40 @@ const getRestaurantByCity = async (req, res) => {
   try {
     const { city } = req.query;
     if (!city) return res.status(404).json({ msg: "no city found" });
-    const restaurants = await Restaurant.find({ address: { $regex: city, $options: 'i' } });
+    const restaurants = await Restaurant.find({
+      address: { $regex: city, $options: "i" },
+    });
     res.json(restaurants);
   } catch (error) {
     res.status(500).json({ msg: "internal server error" });
   }
 };
+
+const getRestaurantByRating = async (req, res) => {
+  try {
+    const restaurants = await Restaurant.find().sort({ review_rating: -1 });
+
+    if (!restaurants)
+      return res.status(200).json({ msg: "no restaurant found" });
+
+    res.status(200).json(restaurants);
+  } catch (error) {
+    res.status(500).json({ msg: "internal server errro" });
+  }
+};
+
+const restaurantDistanceFromUser= async(req,res) => {
+  try {
+    const userCoords = { lat: req.query.lat , lon: req.query.lon };
+
+    attachDistance(userCoords)(req,res, () => {
+      res.status(200).json(req.restaurantsWithDistance);
+    })
+  } catch (error) {
+    res.status(500).json({msg:"internal server error"})
+  }
+}
+
 
 module.exports = {
   createRestaurant,
@@ -147,4 +184,6 @@ module.exports = {
   getRestaurantByCuisine,
   searchRestaurant,
   getRestaurantByCity,
+  getRestaurantByRating,
+  restaurantDistanceFromUser
 };
