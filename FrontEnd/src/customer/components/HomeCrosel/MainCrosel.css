@@ -1,0 +1,23 @@
+/* styles.css */
+.carousel-image {
+    width: 160px;
+    height: 150px;
+margin-left: 44%;
+    border-radius: 8px;
+  }
+  
+  .item {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .item h3 {
+    margin-top: 10px;
+    font-size: 1.5rem;
+  }
+  
+  .item p {
+    margin: 5px 0;
+    color: #555;
+  }
+  
