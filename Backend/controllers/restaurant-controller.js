@@ -6,8 +6,16 @@ const Restaurant = require("../models/Restaurant");
 const createRestaurant = async (req, res) => {
   try {
     const ownerId = req.params.ownerId;
-    const { restaurant_name, address, phone, cuisine, restaurant_img, city , latitude, longitude } =
-      req.body;
+    const {
+      restaurant_name,
+      address,
+      phone,
+      cuisine,
+      restaurant_img,
+      city,
+      latitude,
+      longitude,
+    } = req.body;
     const newRestaurant = new Restaurant({
       restaurant_name,
       address,
@@ -17,7 +25,7 @@ const createRestaurant = async (req, res) => {
       restaurant_img,
       city,
       latitude,
-      longitude
+      longitude,
     });
     const savedRestaurant = await newRestaurant.save();
     res.status(200).json(savedRestaurant);
@@ -53,8 +61,16 @@ const getRestaurantById = async (req, res) => {
 const updateRestaurant = async (req, res) => {
   try {
     const restaurantId = req.params.restaurantId;
-    const { restaurant_name, address, phone, cuisine, review_rating, city , latitude , longitude} =
-      req.body;
+    const {
+      restaurant_name,
+      address,
+      phone,
+      cuisine,
+      review_rating,
+      city,
+      latitude,
+      longitude,
+    } = req.body;
     const updatedRestaurant = await Restaurant.findByIdAndUpdate(
       restaurantId,
       {
@@ -67,7 +83,7 @@ const updateRestaurant = async (req, res) => {
           review_rating,
           city,
           latitude,
-          longitude
+          longitude,
         },
       },
       { new: true }
@@ -87,7 +103,7 @@ const deleteRestaurant = async (req, res) => {
     const restaurant = await Restaurant.findByIdAndDelete(req.params.id);
 
     if (!restaurant) {
-      return res.status(404).send();
+      return res.status(404).send({msg:"no restaurant found or deleted"});
     }
 
     res.send(restaurant);
@@ -162,18 +178,17 @@ const getRestaurantByRating = async (req, res) => {
   }
 };
 
-const restaurantDistanceFromUser= async(req,res) => {
+const restaurantDistanceFromUser = async (req, res) => {
   try {
-    const userCoords = { lat: req.query.lat , lon: req.query.lon };
+    const userCoords = { lat: req.query.lat, lon: req.query.lon };
 
-    attachDistance(userCoords)(req,res, () => {
+    attachDistance(userCoords)(req, res, () => {
       res.status(200).json(req.restaurantsWithDistance);
-    })
+    });
   } catch (error) {
-    res.status(500).json({msg:"internal server error"})
+    res.status(500).json({ msg: "internal server error" });
   }
-}
-
+};
 
 module.exports = {
   createRestaurant,
@@ -185,5 +200,5 @@ module.exports = {
   searchRestaurant,
   getRestaurantByCity,
   getRestaurantByRating,
-  restaurantDistanceFromUser
+  restaurantDistanceFromUser,
 };

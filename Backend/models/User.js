@@ -12,6 +12,7 @@ const userSchema = new Schema({
     addresses: [{ type : String }],
     isAdmin : { type: Boolean , default: false},
     otp: { type: Number } , 
+    resetToken: { type: String },
     isVerified: { type: Boolean , default: false},
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
