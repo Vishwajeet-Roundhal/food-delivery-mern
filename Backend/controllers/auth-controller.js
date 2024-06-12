@@ -184,8 +184,9 @@ const resetPassword = async (req, res) => {
       return res.status(404).json({ msg: "Invalid or expired token" });
     }
 
-    user.password = newPassword;
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
+    user.password = hashedPassword;
     user.resetToken = undefined;
     await user.save();
 
@@ -209,7 +210,9 @@ const updatePassword = async (req, res) => {
       return res.status(400).json({ msg: "Current password is incorrect" });
     }
 
-    user.password = newPassword;
+    const hashedPass = await bcrypt.hash(newPassword,10);
+
+    user.password = hashedPass;
     await user.save();
 
     res.status(200).json({ msg: "Password updated successfully" });
@@ -220,4 +223,4 @@ const updatePassword = async (req, res) => {
 };
 
 
-module.exports = { register, login, updateUser, verifyOTP, resetPassword, updatePassword };
+module.exports = { register, login, updateUser, verifyOTP, forgotPassword, resetPassword, updatePassword };

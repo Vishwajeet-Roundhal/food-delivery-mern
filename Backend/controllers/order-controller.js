@@ -1,7 +1,7 @@
 const Order = require("../models/Order");
-const OrderItem = require("../models/OrderItem");
 const { sendEmail } = require("../Utils/emailService");
-const mongoose = require('mongoose');
+const Dish = require("../models/Dish");
+const mongoose = require("mongoose");
 
 const createOrder = async (req, res) => {
   try {
@@ -110,13 +110,15 @@ const getRestaurantAllOrders = async (req, res) => {
 const restaurantSales = async (req, res) => {
   try {
     const restaurantId = req.params.restaurantId;
-    const orders = await Order.find({ 
-      restaurant: restaurantId, 
-      paymentStatus: 'paid' 
+    const orders = await Order.find({
+      restaurant: restaurantId,
+      paymentStatus: "paid",
     });
 
     if (!orders || orders.length === 0) {
-      return res.status(404).json({ msg: "No sales data found for this restaurant" });
+      return res
+        .status(404)
+        .json({ msg: "No sales data found for this restaurant" });
     }
 
     const totalSales = orders.reduce((sum, order) => sum + order.totalPrice, 0);
@@ -127,10 +129,6 @@ const restaurantSales = async (req, res) => {
     res.status(500).json({ msg: "internal server error" });
   }
 };
-
-
-
-
 
 module.exports = {
   createOrder,

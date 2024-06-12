@@ -147,6 +147,43 @@ const searchDish = async (req, res) => {
   }
 };
 
+const menuPriceFilter = async (req, res) => {
+  try {
+    const restaurantId = req.params.restaurantId;
+    const { sortOrder } = req.query;
+    const menu = await Menu.findOne({ restaurant: restaurantId });
+
+    const sortDishes = (a, b) => {
+      if (sortOrder === "asc") {
+        return a.price - b.price;
+      } else if (sortOrder === "dsc") {
+        return b.price - a.price;
+      } else {
+        throw new Error("invalid query it should be 'asc' or 'dsc'");
+      }
+    };
+
+    const sortedDishes = menu.dishes.sort(sortDishes);
+
+    res.status(200).json(sortedDishes);
+  } catch (error) {
+    res.status(500).json({ msg: "internal server error" });
+  }
+};
+
+const bestSellerFilter = async (req, res) => {
+  try {
+    const restaurantId = req.params.restaurantId;
+    const menu = await Menu.findOne({ restaurant: restaurantId });
+
+    const dishes = menu.dishes.sort((a, b) => b.orderCount - a.orderCount);
+
+    res.status(200).json(dishes);
+  } catch (error) {
+    res.status(500).json({ msg: "internal server error" }, { error });
+  }
+};
+
 module.exports = {
   createDish,
   getDishes,
@@ -154,4 +191,6 @@ module.exports = {
   deleteDish,
   updateMenu,
   searchDish,
+  bestSellerFilter,
+  menuPriceFilter
 };

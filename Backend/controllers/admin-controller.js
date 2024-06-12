@@ -60,4 +60,4 @@ const restaurantReport = async (req, res) => {
   }
 };
 
-module.exports = { getAllUsers, deleteUser };
+module.exports = { getAllUsers, deleteUser, restaurantReport };

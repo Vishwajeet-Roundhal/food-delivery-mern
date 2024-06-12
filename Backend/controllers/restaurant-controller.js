@@ -2,6 +2,7 @@ const { attachDistance } = require("../middleware/distance");
 const Menu = require("../models/Menu");
 const Order = require("../models/Order");
 const Restaurant = require("../models/Restaurant");
+const Review = require('../models/Review')
 
 const createRestaurant = async (req, res) => {
   try {
@@ -190,6 +191,22 @@ const restaurantDistanceFromUser = async (req, res) => {
   }
 };
 
+const updateAverageRating = async (restaurantId) => {
+  try {
+
+    const reviews = await Review.find({ restaurant: restaurantId });
+
+    const totalRatings = reviews.reduce((acc, review) => acc + review.rating, 0);
+    const avgRating = totalRatings / reviews.length;
+
+    await Restaurant.findByIdAndUpdate(restaurantId, { review_rating: avgRating});
+
+    return avgRating;
+  } catch (error) {
+    throw new Error('Error updating average rating: ' + error.message);
+  }
+};
+
 module.exports = {
   createRestaurant,
   updateRestaurant,
@@ -201,4 +218,5 @@ module.exports = {
   getRestaurantByCity,
   getRestaurantByRating,
   restaurantDistanceFromUser,
+  updateAverageRating
 };

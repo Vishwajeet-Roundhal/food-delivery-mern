@@ -7,6 +7,7 @@ const dishSchema = new Schema({
     price: { type: Number, required: true },
     image: { type: String },
     restaurant: { type: Schema.Types.ObjectId, ref: 'Restaurant', required: true },
+    orderCount: { type: Number },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 });
