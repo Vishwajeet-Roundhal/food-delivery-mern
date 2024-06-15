@@ -9,6 +9,10 @@ const orderSchema = new Schema({
     status: { type: String, enum: ['Pending', 'In Progress', 'Delivered', 'Cancelled'], default: 'Pending' },
     deliveryAddress: { type: String, required: true},
     paymentStatus: { type: String , required: true, enum: ["pending","paid","failed"], default: "pending"},
+    deliveryExecutive: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'DeliveryExecutive',
+      },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 });
