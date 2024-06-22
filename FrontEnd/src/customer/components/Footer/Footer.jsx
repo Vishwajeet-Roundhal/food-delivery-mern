@@ -12,121 +12,121 @@ const Footer = () => {
         sx={{ bgcolor: "black", color: "white", py: 3 }}
       >
         <Grid item xs={12} s={6} md={3}>
-          <Typography className="pb-5" variant="h6" gutterBottom>
+          <Typography className="pb-5" variant="h6" >
             Company
           </Typography>
           <div>
-            <Button className="pb-5" variant="h6" gutterBottom>
+            <Button className="pb-5" variant="h6" >
               About
             </Button>
           </div>
           <div>
-            <Button className="pb-5" variant="h6" gutterBottom>
+            <Button className="pb-5" variant="h6" >
               Blog
             </Button>
           </div>
           <div>
-            <Button className="pb-5" variant="h6" gutterBottom>
+            <Button className="pb-5" variant="h6" >
               Press
             </Button>
           </div>
           <div>
-            <Button className="pb-5" variant="h6" gutterBottom>
+            <Button className="pb-5" variant="h6" >
               Jobs
             </Button>
           </div>
           <div>
-            <Button className="pb-5" variant="h6" gutterBottom>
+            <Button className="pb-5" variant="h6" >
               Partner
             </Button>
           </div>
         </Grid>
         <Grid item xs={12} s={6} md={3}>
-          <Typography className="pb-5" variant="h6" gutterBottom>
+          <Typography className="pb-5" variant="h6" >
             Solutions
           </Typography>
           <div>
-            <Button className="pb-5" variant="h6" gutterBottom>
+            <Button className="pb-5" variant="h6" >
               About
             </Button>
           </div>
           <div>
-            <Button className="pb-5" variant="h6" gutterBottom>
+            <Button className="pb-5" variant="h6" >
               Blog
             </Button>
           </div>
           <div>
-            <Button className="pb-5" variant="h6" gutterBottom>
+            <Button className="pb-5" variant="h6" >
               Press
             </Button>
           </div>
           <div>
-            <Button className="pb-5" variant="h6" gutterBottom>
+            <Button className="pb-5" variant="h6" >
               Jobs
             </Button>
           </div>
           <div>
-            <Button className="pb-5" variant="h6" gutterBottom>
+            <Button className="pb-5" variant="h6" >
               Partner
             </Button>
           </div>
         </Grid>
         <Grid item xs={12} s={6} md={3}>
-          <Typography className="pb-5" variant="h6" gutterBottom>
+          <Typography className="pb-5" variant="h6" >
             Marketing
           </Typography>
           <div>
-            <Button className="pb-5" variant="h6" gutterBottom>
+            <Button className="pb-5" variant="h6" >
               About
             </Button>
           </div>
           <div>
-            <Button className="pb-5" variant="h6" gutterBottom>
+            <Button className="pb-5" variant="h6" >
               Blog
             </Button>
           </div>
           <div>
-            <Button className="pb-5" variant="h6" gutterBottom>
+            <Button className="pb-5" variant="h6" >
               Press
             </Button>
           </div>
           <div>
-            <Button className="pb-5" variant="h6" gutterBottom>
+            <Button className="pb-5" variant="h6" >
               Jobs
             </Button>
           </div>
           <div>
-            <Button className="pb-5" variant="h6" gutterBottom>
+            <Button className="pb-5" variant="h6" >
               Partner
             </Button>
           </div>
         </Grid>
         <Grid item xs={12} s={6} md={3}>
-          <Typography className="pb-5" variant="h6" gutterBottom>
+          <Typography className="pb-5" variant="h6" >
             Commerse
           </Typography>
           <div>
-            <Button className="pb-5" variant="h6" gutterBottom>
+            <Button className="pb-5" variant="h6" >
               About
             </Button>
           </div>
           <div>
-            <Button className="pb-5" variant="h6" gutterBottom>
+            <Button className="pb-5" variant="h6" >
               Blog
             </Button>
           </div>
           <div>
-            <Button className="pb-5" variant="h6" gutterBottom>
+            <Button className="pb-5" variant="h6" >
               Press
             </Button>
           </div>
           <div>
-            <Button className="pb-5" variant="h6" gutterBottom>
+            <Button className="pb-5" variant="h6" >
               Jobs
             </Button>
           </div>
           <div>
-            <Button className="pb-5" variant="h6" gutterBottom>
+            <Button className="pb-5" variant="h6" >
               Partner
             </Button>
           </div>
