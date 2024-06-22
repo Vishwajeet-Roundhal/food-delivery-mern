@@ -43,6 +43,14 @@ app.post('/upload', userAuth ,upload.single('profileImage'), async (req, res) =>
     }
 });
 
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+  // Other headers you might need
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE,PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
+
 app.use('/api/auth',auth);
 app.use('/api/restaurant',restaurant);
 
