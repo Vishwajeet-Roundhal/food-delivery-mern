@@ -391,6 +391,7 @@ import {
   AiOutlineSearch,
   AiFillTag,
 } from "react-icons/ai";
+import { Link } from "react-router-dom"
 import { BsFillCartFill, BsFillSaveFill } from "react-icons/bs";
 import { TbTruckDelivery } from "react-icons/tb";
 import { FaUserFriends, FaWallet } from "react-icons/fa";
@@ -422,6 +423,9 @@ const Navbar = () => {
           placeholder="Search Foods"
         />
       </div>
+
+      <li><Link to="/registerRestaurant">Register your own restaurant</Link></li>
+      <li><Link to="/register">Register</Link></li>
 
       {/* Cart button */}
       <button className="bg-black text-white hidden md:flex items-center py-2 rounded-full ">
