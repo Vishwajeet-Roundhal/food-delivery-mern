@@ -1,17 +1,19 @@
 import React from "react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"
 
 function RestoForm() {
   const [formData, setFormData] = useState({
-    name: "",
+    restaurant_name: "",
     address: "",
     city: "",
     phone: "",
     cuisine: "",
-    img: "",
+    restaurant_img: "",
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -20,10 +22,12 @@ function RestoForm() {
     });
   };
 
+  const userId = localStorage.getItem('userId');
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:6005/api/restaurant/createRestaurant", {
+      const response = await fetch(`http://localhost:6005/api/restaurant/createRestaurant/${userId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -32,17 +36,22 @@ function RestoForm() {
       });
 
       if (response.ok) {
+        const data = await response.json(); // Parse response JSON
+        const { _id } = data;
+        localStorage.setItem('RestaurantId',_id);
         setSuccess("Restaurant added successfully!");
         setError("");
         // Reset form data
         setFormData({
-          name: "",
+          restaurant_name: "",
           address: "",
           city: "",
           phone: "",
           cuisine: "",
-          img: "",
+          restaurant_img: "",
         });
+
+        navigate('/registerRestaurant/dashboard');
       } else {
         const data = await response.json();
         setError(data.msg || "Failed to add restaurant");
@@ -69,9 +78,9 @@ function RestoForm() {
             </label>
             <input
               type="text"
-              id="name"
-              name="name"
-              value={formData.name}
+              id="restaurant_name"
+              name="restaurant_name"
+              value={formData.restaurant_name}
               onChange={handleChange}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
             />
@@ -149,9 +158,9 @@ function RestoForm() {
             </label>
             <input
               type="url"
-              id="img"
-              name="img"
-              value={formData.img}
+              id="restaurant_img"
+              name="restaurant_img"
+              value={formData.restaurant_img}
               onChange={handleChange}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
             />

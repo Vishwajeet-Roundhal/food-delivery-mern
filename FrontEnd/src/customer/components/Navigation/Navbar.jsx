@@ -426,6 +426,7 @@ const Navbar = () => {
 
       <li><Link to="/registerRestaurant">Register your own restaurant</Link></li>
       <li><Link to="/register">Register</Link></li>
+      <li><Link to="/login">Login</Link></li>
 
       {/* Cart button */}
       <button className="bg-black text-white hidden md:flex items-center py-2 rounded-full ">
