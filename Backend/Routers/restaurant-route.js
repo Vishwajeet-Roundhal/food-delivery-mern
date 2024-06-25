@@ -21,8 +21,8 @@ Router.route('/restaurantFromUser').get(restaurantController.restaurantDistanceF
 Router.route('/createDish/:restaurantId').post(authorizeOwner,dishController.createDish)
 Router.route('/getDishes/:restaurantId').get(dishController.getDishes);
 Router.route('/updateMenu/:restaurantId').post(authorizeOwner,dishController.updateMenu)
-Router.route('/updateDish/:dishId').patch(authorizeOwner,dishController.updateDish)
-Router.route('/deleteDish/:dishId').delete(authorizeOwner,dishController.deleteDish)
+Router.route('/updateDish/:restaurantId/:dishId').patch(authorizeOwner,dishController.updateDish)
+Router.route('/deleteDish/:restaurantId/:dishId').delete(authorizeOwner,dishController.deleteDish)
 Router.route('/searchDish/:restaurantId').get(dishController.searchDish)
 
 
