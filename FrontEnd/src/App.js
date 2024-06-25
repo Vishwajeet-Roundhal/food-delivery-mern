@@ -9,6 +9,7 @@ import { UserProvider } from "./Context/UserContext";
 import Register from "./customer/components/Register";
 import Dashboard from "./Admin/restaurant/Dashboard";
 import Login from "./customer/components/Login";
+import SingleRestaurant from "./customer/components/SingleRestaurant";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/restaurant/:id" element={<SingleRestaurant />} />
               
               <Route path="/registerRestaurant">
                 <Route path="dashboard" element={<Dashboard />} />
