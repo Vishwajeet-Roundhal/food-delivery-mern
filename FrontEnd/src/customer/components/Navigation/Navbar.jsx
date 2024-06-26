@@ -5,7 +5,7 @@ import {
   AiOutlineSearch,
   AiFillTag,
 } from "react-icons/ai";
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
 import { BsFillCartFill, BsFillSaveFill } from "react-icons/bs";
 import { TbTruckDelivery } from "react-icons/tb";
 import { FaUserFriends, FaWallet } from "react-icons/fa";
@@ -43,9 +43,12 @@ const Navbar = ({cart}) => {
         />
       </div>
 
-      <li><Link to="/registerRestaurant">Register your own restaurant</Link></li>
-      <li><Link to="/register">Register</Link></li>
-      <li><Link to="/login">Login</Link></li>
+      <li>
+        <Link to="/registerRestaurant">Register your own restaurant</Link>
+      </li>
+      <li>
+        <Link to="/register">Register</Link>
+      </li>
 
       {/* Cart button */}
       <Link to="/cart" className="bg-black text-white hidden md:flex items-center py-3 px-2 rounded-full ">

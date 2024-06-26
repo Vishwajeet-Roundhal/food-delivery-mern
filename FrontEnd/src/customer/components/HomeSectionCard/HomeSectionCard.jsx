@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect,useRef } from "react";
 
 const HomeSectionCard = ({ product }) => {
   const getResto = async () => {
