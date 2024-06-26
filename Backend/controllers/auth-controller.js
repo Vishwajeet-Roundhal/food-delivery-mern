@@ -222,5 +222,15 @@ const updatePassword = async (req, res) => {
   }
 };
 
+const getUserById = async(req,res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await User.findById(userId);
+    if(!user) return res.status(404).json({msg: "User not found"});
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({msg:"internal server error"})
+  }
+}
 
-module.exports = { register, login, updateUser, verifyOTP, forgotPassword, resetPassword, updatePassword };
+module.exports = { register, login, updateUser, verifyOTP, forgotPassword, resetPassword, updatePassword , getUserById};
