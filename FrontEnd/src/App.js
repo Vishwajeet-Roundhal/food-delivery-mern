@@ -10,29 +10,33 @@ import Register from "./customer/components/Register";
 import Dashboard from "./Admin/restaurant/Dashboard";
 import Login from "./customer/components/Login";
 import SingleRestaurant from "./customer/components/SingleRestaurant";
+import MyCart from "./customer/components/MyCart";
+import { CartProvider } from "./Context/CartContext";
 
 function App() {
   return (
     <Router>
       <UserProvider>
-        <div className="App">
-          <Navbar />
-          <div className="content">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/restaurant/:id" element={<SingleRestaurant />} />
-              
-              <Route path="/registerRestaurant">
-                <Route path="dashboard" element={<Dashboard />} />
-                <Route path="/registerRestaurant" element={<RestoForm />} />
-              </Route>
+        <CartProvider>
+          <div className="App">
+            <Navbar />
+            <div className="content">
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/restaurant/:id" element={<SingleRestaurant />} />
+                <Route path="/cart" element={<MyCart />} />
 
-            </Routes>
+                <Route path="/registerRestaurant">
+                  <Route path="dashboard" element={<Dashboard />} />
+                  <Route path="/registerRestaurant" element={<RestoForm />} />
+                </Route>
+              </Routes>
+            </div>
+            <Footer className="footer"/>
           </div>
-          <Footer />
-        </div>
+        </CartProvider>
       </UserProvider>
     </Router>
   );

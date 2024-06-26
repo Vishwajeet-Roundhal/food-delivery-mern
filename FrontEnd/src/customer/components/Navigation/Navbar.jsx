@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   AiOutlineClose,
   AiOutlineMenu,
@@ -10,9 +10,14 @@ import { BsFillCartFill, BsFillSaveFill } from "react-icons/bs";
 import { TbTruckDelivery } from "react-icons/tb";
 import { FaUserFriends, FaWallet } from "react-icons/fa";
 import { MdFavorite, MdHelp } from "react-icons/md";
+import { CartContext } from "../../../Context/CartContext";
+import { useContext } from "react";
 
-const Navbar = () => {
+const Navbar = ({cart}) => {
   const [nav, setNav] = useState(false);
+  const { cartSize } = useContext(CartContext)
+
+ 
   return (
     <div className="max-w-[1640px] mx-auto flex justify-between p-4 items-center">
       {/* left side */}
@@ -20,9 +25,9 @@ const Navbar = () => {
         <div onClick={() => setNav(!nav)} className="cursor-pointer">
           <AiOutlineMenu size={30} />
         </div>
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl px-2">
+        <Link to="/" className="text-2xl sm:text-3xl lg:text-4xl px-2">
           Best<span className="font-bold">Eats</span>
-        </h1>
+        </Link>
         <div className="hidden lg:flex item-center bg-gray-200 rounded-full p-1 text-[14px]">
           <p className="bg-black text-white rounded-full p-2">Delivery</p>
           <p className="p-2">Pickup</p>
@@ -43,10 +48,10 @@ const Navbar = () => {
       <li><Link to="/login">Login</Link></li>
 
       {/* Cart button */}
-      <button className="bg-black text-white hidden md:flex items-center py-2 rounded-full ">
+      <Link to="/cart" className="bg-black text-white hidden md:flex items-center py-3 px-2 rounded-full ">
         <BsFillCartFill size={20} className="mr-2" />
-        Cart
-      </button>
+        Cart {cartSize}
+      </Link>
 
       {/* Mobile menu  */}
       {/* Overlay */}
