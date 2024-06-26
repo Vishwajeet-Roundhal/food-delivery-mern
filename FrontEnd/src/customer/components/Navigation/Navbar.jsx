@@ -391,14 +391,20 @@ import {
   AiOutlineSearch,
   AiFillTag,
 } from "react-icons/ai";
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
 import { BsFillCartFill, BsFillSaveFill } from "react-icons/bs";
 import { TbTruckDelivery } from "react-icons/tb";
 import { FaUserFriends, FaWallet } from "react-icons/fa";
 import { MdFavorite, MdHelp } from "react-icons/md";
+import HomePage from "../../pages/HomePage/HomePage";
+import MainCrosel from "../HomeMainCarousal/MainCrosel";
 
 const Navbar = () => {
   const [nav, setNav] = useState(false);
+  const handleClick=()=>{
+    console.log("Cliked");
+    window.location.href =<HomePage></HomePage>;
+  }
   return (
     <div className="max-w-[1640px] mx-auto flex justify-between p-4 items-center">
       {/* left side */}
@@ -406,9 +412,11 @@ const Navbar = () => {
         <div onClick={() => setNav(!nav)} className="cursor-pointer">
           <AiOutlineMenu size={30} />
         </div>
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl px-2">
-          Best<span className="font-bold">Eats</span>
-        </h1>
+        <button onClick={handleClick}>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl px-2">
+            Best<span className="font-bold">Eats</span>
+          </h1>
+        </button>
         <div className="hidden lg:flex item-center bg-gray-200 rounded-full p-1 text-[14px]">
           <p className="bg-black text-white rounded-full p-2">Delivery</p>
           <p className="p-2">Pickup</p>
@@ -424,8 +432,12 @@ const Navbar = () => {
         />
       </div>
 
-      <li><Link to="/registerRestaurant">Register your own restaurant</Link></li>
-      <li><Link to="/register">Register</Link></li>
+      <li>
+        <Link to="/registerRestaurant">Register your own restaurant</Link>
+      </li>
+      <li>
+        <Link to="/register">Register</Link>
+      </li>
 
       {/* Cart button */}
       <button className="bg-black text-white hidden md:flex items-center py-2 rounded-full ">
