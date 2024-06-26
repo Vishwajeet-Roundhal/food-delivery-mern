@@ -49,7 +49,9 @@ const authorizeOwner = async (req, res, next) => {
     try {
         const token = await req.header('Authorization').replace('Bearer ', '');
         const decoded = jwt.verify(token, process.env.secret);
-        const userId = decoded._id;
+        console.log(decoded);
+        const userId = decoded.userId;
+        console.log(userId);
 
         const restaurantId = req.params.restaurantId;
         const restaurant = await Restaurant.findById(restaurantId);

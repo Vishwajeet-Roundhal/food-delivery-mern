@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 function Register() {
     const [formData, setFormData] = useState({
-        username: '',
+        name: '',
         email: '',
         password: ''
       });
@@ -32,15 +32,19 @@ function Register() {
     
           if (response.ok) {
             const data = await response.json();
-            setUserId(data._id); // Assuming the API returns the user ID in the response
+            console.log(data);
+            console.log(data.newUser._id);
+            console.log(data.token);
+            setUserId(data.newUser._id); // Assuming the API returns the user ID in the response
             setSuccess('Registration successful!');
             setError('');
 
-            localStorage.setItem('userId', data._id);
+            localStorage.setItem('userId', data.newUser._id);
+            localStorage.setItem('token',data.token);
 
             // Reset form data
             setFormData({
-              username: '',
+              name: '',
               email: '',
               password: ''
             });
@@ -62,14 +66,14 @@ function Register() {
           {success && userId && <div className="text-green-500 mb-4">{success}</div>}
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
-                Username
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
+                name
               </label>
               <input
                 type="text"
-                id="username"
-                name="username"
-                value={formData.username}
+                id="name"
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
               />

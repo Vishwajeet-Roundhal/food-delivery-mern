@@ -19,9 +19,9 @@ const register = async (req, res) => {
     const salt = 10;
     const pass = await bcrypt.hash(password, salt);
 
-    const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
+    // const otp = Math.floor(100000 + Math.random() * 900000); 
 
-    await sendEmail(email, "Your OTP", otp);
+    // await sendEmail(email, "Your OTP", otp);
 
     const newUser = await User.create({
       name,
@@ -31,7 +31,7 @@ const register = async (req, res) => {
       username,
       addresses,
       profile_url,
-      otp: otp,
+      // otp: otp,
       isVerified: false,
     });
 

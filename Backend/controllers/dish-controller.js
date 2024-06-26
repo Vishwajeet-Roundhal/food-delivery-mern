@@ -98,19 +98,16 @@ const getDishes = async (req, res) => {
 const updateDish = async (req, res) => {
   try {
     const dishId = req.params.dishId;
-    const { name, description, price, image } = req.body;
+    console.log(dishId);
+    const updates = req.body;
 
-    const updatedData = await Dish.findByIdAndUpdate(
-      dishId,
-      {
-        name,
-        description,
-        price,
-        image,
-      },
-      { new: true }
-    );
-    res.status(200).json(updatedData);
+    const updatedDish = await Dish.findByIdAndUpdate(dishId, updates, { new: true });
+
+    if (!updatedDish) {
+      return res.status(404).json({ msg: "Dish not found" });
+    }
+
+    res.status(200).json(updatedDish)
   } catch (error) {
     res.status(500).json({ msg: "Internal server error" });
   }
@@ -124,6 +121,13 @@ const deleteDish = async (req, res) => {
     if (!deletedDish) {
       return res.status(404).json({ msg: "Dish not found" });
     }
+
+    await Menu.updateMany(
+      { dishes: dishId },
+      { $pull: { dishes: dishId } },
+      { multi: true }
+    );
+
 
     res.status(200).json({ msg: "dish deleted successfully" });
   } catch (error) {

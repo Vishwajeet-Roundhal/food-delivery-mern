@@ -2,10 +2,13 @@ require("dotenv").config();
 const express = require("express");
 const connectDB = require("./Utils/db");
 const multer = require('multer');
+const cors = require('cors')
 const app = express();
 const auth = require('./Routers/auth-route')
 const restaurant = require('./Routers/restaurant-route')
 PORT = 6005;
+app.use(cors());
+
 app.use(express.json());
 const User = require("./models/User");
 const { userAuth } = require("./middleware/Auth-middleware");
@@ -42,6 +45,7 @@ app.post('/upload', userAuth ,upload.single('profileImage'), async (req, res) =>
         res.status(500).send(error.message);
     }
 });
+
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
