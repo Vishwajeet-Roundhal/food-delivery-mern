@@ -2,7 +2,7 @@ const { attachDistance } = require("../middleware/distance");
 const Menu = require("../models/Menu");
 const Order = require("../models/Order");
 const Restaurant = require("../models/Restaurant");
-const Review = require('../models/Review')
+const Review = require("../models/Review");
 
 const createRestaurant = async (req, res) => {
   try {
@@ -104,7 +104,7 @@ const deleteRestaurant = async (req, res) => {
     const restaurant = await Restaurant.findByIdAndDelete(req.params.id);
 
     if (!restaurant) {
-      return res.status(404).send({msg:"no restaurant found or deleted"});
+      return res.status(404).send({ msg: "no restaurant found or deleted" });
     }
 
     res.send(restaurant);
@@ -117,12 +117,19 @@ const getRestaurantByCuisine = async (req, res) => {
   try {
     const { cuisine } = req.query;
 
+    let restaurants;
+
     if (!cuisine) {
       return res.status(400).json({ msg: "Cuisine type is required" });
     }
 
-    const restaurants = await Restaurant.find({ cuisine: cuisine });
-
+    if (cuisine === "all") {
+      // Return all restaurants if cuisine is an empty string
+      restaurants = await Restaurant.find();
+    } else {
+      // Return restaurants that match the specified cuisine
+      restaurants = await Restaurant.find({ cuisine: cuisine });
+    }
     if (restaurants.length === 0) {
       return res
         .status(404)
@@ -155,11 +162,21 @@ const searchRestaurant = async (req, res) => {
 
 const getRestaurantByCity = async (req, res) => {
   try {
-    const { city } = req.query;
-    if (!city) return res.status(404).json({ msg: "no city found" });
-    const restaurants = await Restaurant.find({
+    const { city, limit, sort } = req.query;
+    if (!city) return res.status(404).json({ msg: "No city found" });
+
+    let query = Restaurant.find({
       address: { $regex: city, $options: "i" },
     });
+
+    if (limit) {
+      query = query.limit(parseInt(limit, 10));
+    }
+    if (sort === 'rating') {
+      query = query.sort({ review_rating: -1 }); // Sort descending by review_rating
+    }
+
+    const restaurants = await query.exec();
     res.json(restaurants);
   } catch (error) {
     res.status(500).json({ msg: "internal server error" });
@@ -168,10 +185,18 @@ const getRestaurantByCity = async (req, res) => {
 
 const getRestaurantByRating = async (req, res) => {
   try {
-    const restaurants = await Restaurant.find().sort({ review_rating: -1 });
+    const { rating } = req.query;
 
-    if (!restaurants)
-      return res.status(200).json({ msg: "no restaurant found" });
+    if (!rating) {
+      return res.status(400).json({ msg: "Rating query parameter is required" });
+    }
+
+    const restaurants = await Restaurant.find({ review_rating: { $gte: rating } }).sort({ review_rating: -1 });
+
+
+    if (!restaurants || restaurants.length === 0) {
+      return res.status(200).json({ msg: "No restaurants found" });
+    }
 
     res.status(200).json(restaurants);
   } catch (error) {
@@ -193,17 +218,21 @@ const restaurantDistanceFromUser = async (req, res) => {
 
 const updateAverageRating = async (restaurantId) => {
   try {
-
     const reviews = await Review.find({ restaurant: restaurantId });
 
-    const totalRatings = reviews.reduce((acc, review) => acc + review.rating, 0);
+    const totalRatings = reviews.reduce(
+      (acc, review) => acc + review.rating,
+      0
+    );
     const avgRating = totalRatings / reviews.length;
 
-    await Restaurant.findByIdAndUpdate(restaurantId, { review_rating: avgRating});
+    await Restaurant.findByIdAndUpdate(restaurantId, {
+      review_rating: avgRating,
+    });
 
     return avgRating;
   } catch (error) {
-    throw new Error('Error updating average rating: ' + error.message);
+    throw new Error("Error updating average rating: " + error.message);
   }
 };
 
@@ -218,5 +247,5 @@ module.exports = {
   getRestaurantByCity,
   getRestaurantByRating,
   restaurantDistanceFromUser,
-  updateAverageRating
+  updateAverageRating,
 };

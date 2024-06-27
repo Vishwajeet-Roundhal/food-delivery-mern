@@ -24,6 +24,7 @@ Router.route('/updateMenu/:restaurantId').post(authorizeOwner,dishController.upd
 Router.route('/updateDish/:restaurantId/:dishId').patch(authorizeOwner,dishController.updateDish)
 Router.route('/deleteDish/:restaurantId/:dishId').delete(authorizeOwner,dishController.deleteDish)
 Router.route('/searchDish/:restaurantId').get(dishController.searchDish)
+Router.route('/menuFilter/:restaurantId').get(dishController.menuPriceFilter)
 
 
 //Order routes

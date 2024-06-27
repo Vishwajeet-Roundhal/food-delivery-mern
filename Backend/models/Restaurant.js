@@ -8,7 +8,7 @@ const restaurantSchema = new Schema({
   phone: { type: String, required: true },
   cuisine: { type: String, required: true },
   restaurant_img: [{ type: String }],
-  review_rating: { type: Number },
+  review_rating: { type: Number , default: 0 },
   owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
   latitude: { type: Number },
   longitude: { type: Number },
