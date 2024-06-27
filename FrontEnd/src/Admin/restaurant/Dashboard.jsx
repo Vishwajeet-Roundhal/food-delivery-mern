@@ -18,25 +18,47 @@ function Dashboard() {
 
   const restaurantId = localStorage.getItem('RestaurantId');
   console.log(restaurantId);
-  const fetchRestaurant = async () => {
-    try {
-      const response = await fetch(`http://localhost:6005/api/restaurant/getRestaurantById/${restaurantId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch restaurant');
-      }
-      const data = await response.json();
-      setRestaurant(data); // Assuming data is a single restaurant object
-      setLoading(false);
-    } catch (error) {
-      setError(error.message);
-      setLoading(false);
-    }
-  };
+  // const fetchRestaurant = async () => {
+  //   try {
+  //     const response = await fetch(`http://localhost:6005/api/restaurant/getRestaurantById/${restaurantId}`);
+  //     if (!response.ok) {
+  //       throw new Error('Failed to fetch restaurant');
+  //     }
+  //     const data = await response.json();
+  //     console.log(data);
+  //     setRestaurant(data); // Assuming data is a single restaurant object
+  //     setLoading(false);
+  //   } catch (error) {
+  //     setError(error.message);
+  //     setLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
+    const fetchRestaurant = async () => {
+      try {
+        const response = await fetch(`http://localhost:6005/api/restaurant/getRestaurantById/${restaurantId}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch restaurant');
+        }
+        const data = await response.json();
+        console.log(data);
+        setRestaurant(data); // Assuming data is a single restaurant object
+        setLoading(false);
+        if(dishes && dishes._id){
+          fetchDishes()
+        } 
+          
+      } catch (error) {
+        setError(error.message);
+        setLoading(false);
+      }
+    };
+
     fetchRestaurant();
-    fetchDishes();
   }, [restaurantId]); // Fetch data whenever restaurantId changes
+
+ 
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -199,7 +221,8 @@ function Dashboard() {
 
       {/* Display Dishes */}
       <div>
-        <h3 className="text-lg font-semibold mb-2">Dishes</h3>
+        <h3 className="text-lg font-semibold mb-2">Your dishes</h3>           
+        <button onClick={fetchDishes}>Get Dishes</button>
         {dishes && dishes.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {dishes.map(dish => (
@@ -219,7 +242,7 @@ function Dashboard() {
 
       {editDish && (
         <div className="bg-white p-4 shadow-md rounded-lg mb-4">
-          <h3 className="text-lg font-semibold mb-2">Edit Dish</h3>
+          <h3 className="text-lg font-semibold mb-2">Edit Dish</h3> 
           <form onSubmit={handleUpdateDish}>
             <div className="mb-2">
               <label htmlFor="editName" className="block text-gray-700 font-bold mb-1">Dish Name</label>

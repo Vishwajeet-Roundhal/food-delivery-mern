@@ -1,15 +1,19 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import { Link } from "react-router-dom";
-import  Modal  from "react-modal";
+import Modal from "react-modal";
+import { UserContext } from "../../../Context/UserContext";
 
 const HomePage = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const loader = useRef(null);
-  const [showFilter, setShowFilter] = useState(false); // State for filter visibility
+  const [showFilter, setShowFilter] = useState(false);
+  const [cuisine, setCuisine] = useState(null);
+  const [rating, setRating] = useState(null);
+  const [cityRestaurant, setCityRestaurant] = useState([]);
 
-  
+  const { locData } = useContext(UserContext);
 
   const getRestoData = async () => {
     setLoading(true);
@@ -21,7 +25,8 @@ const HomePage = () => {
         throw new Error("Failed to fetch restaurants");
       }
       const data = await response.json();
-      setRestaurants((prevRestaurants) => [...prevRestaurants, ...data]);
+      // setRestaurants((prevRestaurants) => [...prevRestaurants, ...data]);
+      setRestaurants(data);
       setPage(page + 1);
     } catch (error) {
       console.error("Error fetching restaurants:", error.message);
@@ -29,9 +34,7 @@ const HomePage = () => {
     setLoading(false);
   };
 
-  useEffect(() => {
-    getRestoData();
-  }, []);
+ 
 
   useEffect(() => {
     const options = {
@@ -59,10 +62,168 @@ const HomePage = () => {
     setShowFilter(!showFilter);
   };
 
+  const fetchRestaurantByCuisine = async (cuisine) => {
+    try {
+      const res = await fetch(
+        `http://localhost:6005/api/restaurant/getRestaurantByCuisine?cuisine=${cuisine}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (res.ok) {
+        const data = await res.json();
+        console.log(data);
+        setRestaurants(data);
+      }
+    } catch (error) {
+      console.error("Error fetching restaurants:", error.message);
+    }
+  };
+
+  const fetchRestaurantByRating = async (rating) => {
+    try {
+      const res = await fetch(
+        `http://localhost:6005/api/restaurant/getRestaurantByRating?rating=${rating}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (res.ok) {
+        const data = await res.json();
+        console.log("Data received:", data);
+        // Ensure data is an array
+        if (Array.isArray(data)) {
+          setRestaurants(data);
+        } else {
+          console.error("Expected array but got:", data);
+          setRestaurants([]);
+        }
+      } else {
+        console.error("Error fetching restaurants:", res.statusText);
+        setRestaurants([]);
+      }
+      
+    } catch (error) {
+      console.error("Error fetching restaurants:", error.message);
+    }
+  };
+
+  const fetchRestaurantByCity = async () => {
+    try {
+      const res = await fetch(
+        `http://localhost:6005/api/restaurant/getRestaurantByCity?city=${locData.city}&limit=3&sort=rating`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setCityRestaurant(data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    if (cuisine) {
+      fetchRestaurantByCuisine(cuisine);
+    }
+  }, [cuisine]);
+
+  useEffect(() => {
+    if(locData.city){
+    fetchRestaurantByCity();
+    }
+  }, [locData.city]);
+
+  useEffect(() => {
+    if (rating) {
+      fetchRestaurantByRating(rating);
+    }
+  }, [rating]);
+
+  useEffect(() => {
+    getRestoData();
+  }, []);
+
   return (
     <div className="bg-gray-100 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold text-center mb-8">
+        <h2 className="text-3xl text-left mb-3">
+          Top Restaurants in {locData.city}
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-2">
+          {cityRestaurant.map((restaurant) => (
+            <Link
+              key={restaurant._id}
+              className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition duration-300"
+              to={`/restaurant/${restaurant._id}`}
+            >
+               <div className="relative">
+                <img
+                  src={
+                    restaurant.restaurant_img.length > 0
+                      ? restaurant.restaurant_img[0]
+                      : "FrontEnd/src/Data/image-not-found-icon.png"
+                  }
+                  alt={restaurant.restaurant_name}
+                  className="w-full h-56 object-cover object-center rounded-t-lg"
+                />
+                <div className="absolute inset-0 bg-black opacity-25 hover:opacity-0 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                  <span className="text-white text-lg font-semibold">
+                    {restaurant.restaurant_name}
+                  </span>
+                </div>
+              </div>
+              <div className="p-4">
+                <p className="text-large text-white-800 mb-1">
+                  {restaurant.restaurant_name}
+                </p>
+                <p className="text-sm text-gray-600 mb-2">
+                  {restaurant.address}
+                </p>
+                <p className="text-sm text-gray-600 mb-4">
+                  Cuisine: {restaurant.cuisine}
+                  <span className="ml-2 text-blue-500">
+                    {" "}
+                    Rating: {restaurant.review_rating}
+                  </span>
+                </p>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-700">
+                    View Details
+                  </span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 text-gray-600 hover:text-gray-800 transition duration-300"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M11.707 9.293a1 1 0 00-1.414-1.414L7 10.586V7a1 1 0 10-2 0v4a1 1 0 001 1h4a1 1 0 000-2h-2.293l2.707-2.707a1 1 0 000-1.414z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+        <h2 className="text-3xl font-bold text-center mb-8 mt-3">
           Discover Restaurants
         </h2>
         <div className="mb-4 text-left text-lg">
@@ -78,27 +239,27 @@ const HomePage = () => {
           onRequestClose={toggleFilter}
           style={{
             content: {
-              position: 'fixed',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              backgroundColor: 'white',
-              padding: '20px',
-              borderRadius: '8px',
-              maxWidth: '80%',
-              maxHeight: '80%',
-              overflow: 'auto',
-              zIndex: 1000
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              backgroundColor: "white",
+              padding: "20px",
+              borderRadius: "8px",
+              maxWidth: "100%",
+              maxHeight: "100%",
+              overflow: "auto",
+              zIndex: 1000,
             },
             overlay: {
-              position: 'fixed',
+              position: "fixed",
               top: 0,
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              zIndex: 999
-            }
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              zIndex: 999,
+            },
           }}
           ariaHideApp={false}
         >
@@ -109,10 +270,14 @@ const HomePage = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Cuisine:
               </label>
-              <select className="block w-full p-2 border border-gray-300 rounded-md">
-                <option value="">All Cuisines</option>
-                <option value="italian">Italian</option>
+              <select
+                className="block w-full p-2 border border-gray-300 rounded-md"
+                value={cuisine || ""}
+                onChange={(e) => setCuisine(e.target.value)}
+              >
+                <option value="all">ALl</option>
                 <option value="indian">Indian</option>
+                <option value="French">French</option>
                 <option value="chinese">Chinese</option>
               </select>
             </div>
@@ -120,9 +285,12 @@ const HomePage = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Rating:
               </label>
-              <select className="block w-full p-2 border border-gray-300 rounded-md">
-                <option value="">Any Rating</option>
-                <option value="5">5 Stars</option>
+              <select
+                className="block w-full p-2 border border-gray-300 rounded-md"
+                value={rating || ""}
+                onChange={(e) => setRating(e.target.value)}
+              >
+                <option value="4.5">5 Stars</option>
                 <option value="4">4 Stars & above</option>
                 <option value="3">3 Stars & above</option>
               </select>
@@ -131,11 +299,19 @@ const HomePage = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Sort By:
               </label>
-              <select className="block w-full p-2 border border-gray-300 rounded-md">
-                <option value="rating-desc">Rating Descending</option>
-                <option value="rating-asc">Rating Ascending</option>
-                <option value="price-desc">Higher price</option>
-                <option value="price-asc">Lower price</option>
+              <select
+                className="block w-full p-2 border border-gray-300 rounded-md"
+                onChange={(e) => {
+                  const selectedVal = e.target.value;
+                  if (selectedVal === "1") {
+                    fetchRestaurantByRating(1);
+                  } else if (selectedVal === "time") {
+                    // fetchRestaurantByTime();
+                  }
+                }}
+              >
+                <option value="1">Rating </option>
+                <option value="time">Delivery Time</option>
               </select>
             </div>
           </div>
@@ -145,30 +321,62 @@ const HomePage = () => {
           {restaurants.map((restaurant) => (
             <Link
               key={restaurant._id}
-              className="bg-white rounded-lg overflow-hidden shadow-md"
+              className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition duration-300"
               to={`/restaurant/${restaurant._id}`}
             >
-              <img
-                src={
-                  restaurant.restaurant_img.length > 0
-                    ? restaurant.restaurant_img[0]
-                    : "FrontEnd/src/Data/image-not-found-icon.png"
-                }
-                alt={restaurant.restaurant_name}
-                className="w-full h-48 object-cover object-center"
-              />
+              <div className="relative">
+                <img
+                  src={
+                    restaurant.restaurant_img.length > 0
+                      ? restaurant.restaurant_img[0]
+                      : "FrontEnd/src/Data/image-not-found-icon.png"
+                  }
+                  alt={restaurant.restaurant_name}
+                  className="w-full h-56 object-cover object-center rounded-t-lg"
+                />
+                <div className="absolute inset-0 bg-black opacity-25 hover:opacity-0 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                  <span className="text-white text-lg font-semibold">
+                    {restaurant.restaurant_name}
+                  </span>
+                </div>
+              </div>
               <div className="p-4">
-                <h3 className="text-xl font-bold mb-2">
+                <p className="text-large text-white-800 mb-1">
                   {restaurant.restaurant_name}
-                </h3>
-                <p className="text-gray-600 mb-2">{restaurant.address}</p>
-                <p className="text-gray-600 mb-4">
-                  Cuisine: {restaurant.cuisine}
                 </p>
+                <p className="text-sm text-gray-600 mb-2">
+                  {restaurant.address}
+                </p>
+                <p className="text-sm text-gray-600 mb-4">
+                  Cuisine: {restaurant.cuisine}
+                  <span className="ml-2 text-blue-500">
+                    {" "}
+                    Rating: {restaurant.review_rating}
+                  </span>
+                </p>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-700">
+                    View Details
+                  </span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 text-gray-600 hover:text-gray-800 transition duration-300"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M11.707 9.293a1 1 0 00-1.414-1.414L7 10.586V7a1 1 0 10-2 0v4a1 1 0 001 1h4a1 1 0 000-2h-2.293l2.707-2.707a1 1 0 000-1.414z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
               </div>
             </Link>
           ))}
         </div>
+
         {/* {loading && <p className="text-center mt-4">Loading...</p>} */}
         {/* <div ref={loader} className="mt-4"></div> */}
       </div>

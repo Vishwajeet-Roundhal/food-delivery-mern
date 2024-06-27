@@ -10,6 +10,8 @@ function RestoForm() {
     phone: "",
     cuisine: "",
     restaurant_img: "",
+    latitude:"",
+    longitude:"",
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -23,6 +25,27 @@ function RestoForm() {
   };
 
   const userId = localStorage.getItem('userId');
+
+  const fetchLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setFormData({
+            ...formData,
+            latitude: latitude,
+            longitude: longitude,
+          });
+        },
+        (error) => {
+          console.error("Error fetching location:", error);
+          setError("Failed to fetch location");
+        }
+      );
+    } else {
+      setError("Geolocation is not supported by this browser.");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,6 +72,8 @@ function RestoForm() {
           phone: "",
           cuisine: "",
           restaurant_img: "",
+          latitude: "",
+          longitude: ""
         });
 
         navigate('/registerRestaurant/dashboard');
@@ -165,6 +190,14 @@ function RestoForm() {
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
             />
           </div>
+          <button
+            type="button"
+            onClick={fetchLocation}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Get Location
+          </button>
+
           <div className="flex items-center justify-between">
             <button
               type="submit"

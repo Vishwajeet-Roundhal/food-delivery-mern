@@ -12,11 +12,13 @@ import { FaUserFriends, FaWallet } from "react-icons/fa";
 import { MdFavorite, MdHelp } from "react-icons/md";
 import { CartContext } from "../../../Context/CartContext";
 import { useContext } from "react";
+import { UserContext } from "../../../Context/UserContext";
 
 const Navbar = ({cart}) => {
   const [nav, setNav] = useState(false);
   const { cartSize } = useContext(CartContext)
-
+  const { locData } = useContext(UserContext)
+  const { city , region, country_name } = locData;
  
   return (
     <div className="max-w-[1640px] mx-auto flex justify-between p-4 items-center">
@@ -28,10 +30,10 @@ const Navbar = ({cart}) => {
         <Link to="/" className="text-2xl sm:text-3xl lg:text-4xl px-2">
           Best<span className="font-bold">Eats</span>
         </Link>
-        <div className="hidden lg:flex item-center bg-gray-200 rounded-full p-1 text-[14px]">
-          <p className="bg-black text-white rounded-full p-2">Delivery</p>
-          <p className="p-2">Pickup</p>
-        </div>
+        <div className="flex flex-col items-center justify-center space-y-2">
+      <p className="text-sm">{locData.city}</p>
+      <p className="text-xs text-gray-500">{locData.region}</p>
+    </div>
       </div>
       {/* search */}
       <div className="bg-gray-200 rounded-full flex items-center px-2 w-[200px] sm:w-[400px] lg:w-[500px]">
@@ -49,7 +51,9 @@ const Navbar = ({cart}) => {
       <li>
         <Link to="/register">Register</Link>
       </li>
-
+      <li>
+        <Link to="/login">Login</Link>
+        </li>
       {/* Cart button */}
       <Link to="/cart" className="bg-black text-white hidden md:flex items-center py-3 px-2 rounded-full ">
         <BsFillCartFill size={20} className="mr-2" />
@@ -82,34 +86,18 @@ const Navbar = ({cart}) => {
         </h2>
         <nav>
           <ul className="flex flex-col p-4 text-gray-800">
-            <li className="text-xl py-4 flex">
+            <Link to="/orders" className="text-xl py-4 flex">
               <TbTruckDelivery size={25} className="mr-4" />
               Orders
-            </li>
+            </Link>
             <li className="text-xl py-4 flex">
               <MdFavorite size={25} className="mr-4" />
               Favorites
             </li>
             <li className="text-xl py-4 flex">
-              <FaWallet size={25} className="mr-4" />
-              Wallet
-            </li>
-            <li className="text-xl py-4 flex">
               <MdHelp size={25} className="mr-4" />
               Help
-            </li>
-            <li className="text-xl py-4 flex">
-              <AiFillTag size={25} className="mr-4" />
-              Promotions
-            </li>
-            <li className="text-xl py-4 flex">
-              <BsFillSaveFill size={25} className="mr-4" />
-              Best Ones
-            </li>
-            <li className="text-xl py-4 flex">
-              <FaUserFriends size={25} className="mr-4" />
-              Invite Friends
-            </li>
+            </li> 
           </ul>
         </nav>
       </div>
