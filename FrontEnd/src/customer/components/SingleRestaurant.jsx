@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { CartContext } from "../../Context/CartContext";
 import { useContext } from "react";
 
@@ -8,9 +8,23 @@ function SingleRestaurant() {
   const [restaurant, setRestaurant] = useState(null);
   const { cart, addToCart, removeFromCart } = useContext(CartContext);
   const [searchQuery, setSearchQuery] = useState("");
-
+  const location = useLocation();
+  const { distance } = location.state || {};
+  console.log(distance);
   const [dishes, setDishes] = useState([]);
   const [rating, setRating] = useState(0);
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
+
+  const deliveryFee = () => {
+      const baseFee = 5; // Base delivery fee
+      const feePerKm = 1.5; // Fee per kilometer
+
+      // Calculate delivery fee
+      const totalFee = baseFee + distance || 35 * feePerKm;
+      return totalFee.toFixed(2); // Return formatted fee (e.g., 2 decimal places)
+    
+  };
+
 
   const fetchRestaurant = async () => {
     try {
@@ -54,6 +68,9 @@ function SingleRestaurant() {
   const filteredDishes = dishes.filter((dish) =>
     dish.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const isAuth = localStorage.getItem('token');
+
   const submitReview = async () => {
     try {
       const response = await fetch(
@@ -62,6 +79,7 @@ function SingleRestaurant() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: isAuth,
           },
           body: JSON.stringify({ rating }),
         }
@@ -69,7 +87,10 @@ function SingleRestaurant() {
       if (!response.ok) {
         throw new Error("Failed to submit review");
       }
-      // Optionally handle success scenario (e.g., show confirmation message)
+      setReviewSubmitted(true)
+      setTimeout(() => {
+        setReviewSubmitted(false);
+      }, 3000);
     } catch (error) {
       console.error("Error submitting review:", error.message);
     }
@@ -111,6 +132,7 @@ function SingleRestaurant() {
                 <i className="fas fa-utensils mr-2"></i>
                 Cuisine: {restaurant.cuisine}
               </p>
+              <p>Delivery Fee: {deliveryFee()}</p>
               <div className="mb-8 float-right ml-auto">
                 <div className="flex items-center space-x-2 mb-4">
                   {[1, 2, 3, 4, 5].map((star) => (
@@ -135,6 +157,11 @@ function SingleRestaurant() {
             </div>
           </div>
         </div>
+        {reviewSubmitted && (
+          <div className="fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg transition-transform duration-300 transform translate-y-0">
+            Review submitted successfully!
+          </div>
+        )}
 
         {/* Menu Section */}
         <div className="mb-8">

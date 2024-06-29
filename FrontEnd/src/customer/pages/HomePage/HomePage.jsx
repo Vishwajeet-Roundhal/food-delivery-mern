@@ -12,6 +12,7 @@ const HomePage = () => {
   const [cuisine, setCuisine] = useState(null);
   const [rating, setRating] = useState(null);
   const [cityRestaurant, setCityRestaurant] = useState([]);
+  // const [distance,setDistance] = useState("");
 
   const { locData } = useContext(UserContext);
 
@@ -19,7 +20,7 @@ const HomePage = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:6005/api/restaurant/restaurants`
+        `http://localhost:6005/api/restaurant/restaurantFromUser/?lat=${locData.latitude}&lon=${locData.longitude}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch restaurants");
@@ -33,8 +34,6 @@ const HomePage = () => {
     }
     setLoading(false);
   };
-
- 
 
   useEffect(() => {
     const options = {
@@ -110,10 +109,16 @@ const HomePage = () => {
         console.error("Error fetching restaurants:", res.statusText);
         setRestaurants([]);
       }
-      
     } catch (error) {
       console.error("Error fetching restaurants:", error.message);
     }
+  };
+
+  const calculateTravelTime = (distance, speed = 25) => {
+    const time = distance / speed;
+    const hours = Math.floor(time);
+    const minutes = Math.round((time - hours) * 60);
+    return `${hours}h ${minutes}m`;
   };
 
   const fetchRestaurantByCity = async () => {
@@ -135,6 +140,12 @@ const HomePage = () => {
       console.error(error);
     }
   };
+  console.log(restaurants);
+
+  useEffect(() => {
+    getRestoData();
+    // restaurantFromUser();
+  }, []);
 
   useEffect(() => {
     if (cuisine) {
@@ -143,8 +154,8 @@ const HomePage = () => {
   }, [cuisine]);
 
   useEffect(() => {
-    if(locData.city){
-    fetchRestaurantByCity();
+    if (locData.city) {
+      fetchRestaurantByCity();
     }
   }, [locData.city]);
 
@@ -154,9 +165,6 @@ const HomePage = () => {
     }
   }, [rating]);
 
-  useEffect(() => {
-    getRestoData();
-  }, []);
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -168,40 +176,65 @@ const HomePage = () => {
           {cityRestaurant.map((restaurant) => (
             <Link
               key={restaurant._id}
-              className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition duration-300"
-              to={`/restaurant/${restaurant._id}`}
+              className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300"
+              to={{
+                pathname: `/restaurant/${restaurant._id}`,
+                state: { distance: restaurant.distance }
+              }}
             >
-               <div className="relative">
+              {/* Restaurant Image */}
+              <div className="relative">
                 <img
                   src={
                     restaurant.restaurant_img.length > 0
                       ? restaurant.restaurant_img[0]
-                      : "FrontEnd/src/Data/image-not-found-icon.png"
+                      : "/path/to/default-image.jpg" // Replace with your default image path
                   }
                   alt={restaurant.restaurant_name}
                   className="w-full h-56 object-cover object-center rounded-t-lg"
                 />
-                <div className="absolute inset-0 bg-black opacity-25 hover:opacity-0 transition-opacity duration-300"></div>
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-50 hover:opacity-0 transition-opacity duration-300"></div>
+                {/* Restaurant Name on Hover */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
-                  <span className="text-white text-lg font-semibold">
+                  <span className="text-white text-lg font-semibold text-center">
                     {restaurant.restaurant_name}
                   </span>
                 </div>
               </div>
+              {/* Restaurant Details */}
               <div className="p-4">
-                <p className="text-large text-white-800 mb-1">
+                <p className="text-xl text-gray-800 font-semibold mb-2">
                   {restaurant.restaurant_name}
                 </p>
                 <p className="text-sm text-gray-600 mb-2">
                   {restaurant.address}
                 </p>
-                <p className="text-sm text-gray-600 mb-4">
-                  Cuisine: {restaurant.cuisine}
-                  <span className="ml-2 text-blue-500">
-                    {" "}
-                    Rating: {restaurant.review_rating}
-                  </span>
-                </p>
+                {/* Distance and Delivery */}
+                <div className="flex items-center text-sm text-gray-600 mb-2">
+                  <p className="mr-2">
+                    Distance:{" "}
+                    {restaurant.distance
+                      ? `${restaurant.distance.toFixed(2)} km`
+                      : "N/A"}
+                  </p>
+                  <p>
+                    Estimated Delivery:{" "}
+                    {restaurant.distance
+                      ? calculateTravelTime(restaurant.distance)
+                      : "N/A"}
+                  </p>
+                </div>
+                {/* Cuisine and Rating */}
+                <div className="flex items-center text-sm text-gray-600 mb-4">
+                  <p>
+                    Cuisine: {restaurant.cuisine}
+                    <span className="ml-2 text-blue-500">
+                      Rating: {restaurant.review_rating}
+                    </span>
+                  </p>
+                </div>
+                {/* View Details Button */}
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium text-gray-700">
                     View Details
@@ -321,40 +354,65 @@ const HomePage = () => {
           {restaurants.map((restaurant) => (
             <Link
               key={restaurant._id}
-              className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition duration-300"
-              to={`/restaurant/${restaurant._id}`}
+              className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300"
+              to={{
+                pathname: `/restaurant/${restaurant._id}`,
+                state: { distance: restaurant.distance }
+              }}
             >
+              {/* Restaurant Image */}
               <div className="relative">
                 <img
                   src={
                     restaurant.restaurant_img.length > 0
                       ? restaurant.restaurant_img[0]
-                      : "FrontEnd/src/Data/image-not-found-icon.png"
+                      : "/path/to/default-image.jpg" // Replace with your default image path
                   }
                   alt={restaurant.restaurant_name}
                   className="w-full h-56 object-cover object-center rounded-t-lg"
                 />
-                <div className="absolute inset-0 bg-black opacity-25 hover:opacity-0 transition-opacity duration-300"></div>
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-50 hover:opacity-0 transition-opacity duration-300"></div>
+                {/* Restaurant Name on Hover */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
-                  <span className="text-white text-lg font-semibold">
+                  <span className="text-white text-lg font-semibold text-center">
                     {restaurant.restaurant_name}
                   </span>
                 </div>
               </div>
+              {/* Restaurant Details */}
               <div className="p-4">
-                <p className="text-large text-white-800 mb-1">
+                <p className="text-xl text-gray-800 font-semibold mb-2">
                   {restaurant.restaurant_name}
                 </p>
                 <p className="text-sm text-gray-600 mb-2">
                   {restaurant.address}
                 </p>
-                <p className="text-sm text-gray-600 mb-4">
-                  Cuisine: {restaurant.cuisine}
-                  <span className="ml-2 text-blue-500">
-                    {" "}
-                    Rating: {restaurant.review_rating}
-                  </span>
-                </p>
+                {/* Distance and Delivery */}
+                <div className="flex items-center text-sm text-gray-600 mb-2">
+                  <p className="mr-2">
+                    Distance:{" "}
+                    {restaurant.distance
+                      ? `${restaurant.distance.toFixed(2)} km`
+                      : "N/A"}
+                  </p>
+                  <p>
+                    Estimated Delivery:{" "}
+                    {restaurant.distance
+                      ? calculateTravelTime(restaurant.distance)
+                      : "N/A"}
+                  </p>
+                </div>
+                {/* Cuisine and Rating */}
+                <div className="flex items-center text-sm text-gray-600 mb-4">
+                  <p>
+                    Cuisine: {restaurant.cuisine}
+                    <span className="ml-2 text-blue-500">
+                      Rating: {restaurant.review_rating}
+                    </span>
+                  </p>
+                </div>
+                {/* View Details Button */}
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium text-gray-700">
                     View Details
