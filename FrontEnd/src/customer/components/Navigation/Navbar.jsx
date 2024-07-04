@@ -28,7 +28,7 @@ const Navbar = ({cart}) => {
           <AiOutlineMenu size={30} />
         </div>
         <Link to="/" className="text-2xl sm:text-3xl lg:text-4xl px-2">
-          Best<span className="font-bold">Eats</span>
+        Foodie<span className="font-bold">Finder</span>
         </Link>
         <div className="flex flex-col items-center justify-center space-y-2">
       <p className="text-sm">{locData.city}</p>
@@ -82,7 +82,7 @@ const Navbar = ({cart}) => {
           className="absolute top-4 right-4 cursor-pointer"
         />
         <h2 className="text-2xl p-4">
-          Best<span className="font-bold">Eats</span>
+        Foodie<span className="font-bold">Finder</span>
         </h2>
         <nav>
           <ul className="flex flex-col p-4 text-gray-800">

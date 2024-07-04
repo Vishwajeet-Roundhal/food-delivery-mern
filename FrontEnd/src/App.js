@@ -12,6 +12,7 @@ import Login from "./customer/components/Login";
 import SingleRestaurant from "./customer/components/SingleRestaurant";
 import MyCart from "./customer/components/MyCart";
 import { CartProvider } from "./Context/CartContext";
+import Orders from "./customer/components/Orders";
 
 function App() {
   return (
@@ -27,6 +28,9 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/restaurant/:id" element={<SingleRestaurant />} />
                 <Route path="/cart" element={<MyCart />} />
+                <Route path="/orders" element={<Orders />} />
+                
+                
 
                 <Route path="/registerRestaurant">
                   <Route path="dashboard" element={<Dashboard />} />
