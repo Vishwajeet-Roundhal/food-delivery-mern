@@ -224,7 +224,9 @@ const updateAverageRating = async (restaurantId) => {
       (acc, review) => acc + review.rating,
       0
     );
+    console.log(totalRatings);
     const avgRating = totalRatings / reviews.length;
+    console.log(avgRating);
 
     await Restaurant.findByIdAndUpdate(restaurantId, {
       review_rating: avgRating,

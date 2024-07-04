@@ -87,7 +87,7 @@ const updateOrderById = async (req, res) => {
       The Swiggy Team
     `;
 
-    await sendEmail(userEmail, emailSubject, emailText);
+    // await sendEmail(userEmail, emailSubject, emailText);
 
     res.status(200).json(order);
   } catch (error) {

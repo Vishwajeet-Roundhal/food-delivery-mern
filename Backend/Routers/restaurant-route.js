@@ -3,6 +3,7 @@ const Router = express.Router();
 const restaurantController = require('../controllers/restaurant-controller');
 const dishController = require('../controllers/dish-controller')
 const orderController = require('../controllers/order-controller')
+const reviewController = require("../controllers/review-controller")
 const { authorizeOwner, userAuth } = require('../middleware/Auth-middleware')
 
 Router.route('/createRestaurant/:ownerId').post(restaurantController.createRestaurant)
@@ -25,6 +26,7 @@ Router.route('/updateDish/:restaurantId/:dishId').patch(authorizeOwner,dishContr
 Router.route('/deleteDish/:restaurantId/:dishId').delete(authorizeOwner,dishController.deleteDish)
 Router.route('/searchDish/:restaurantId').get(dishController.searchDish)
 Router.route('/menuFilter/:restaurantId').get(dishController.menuPriceFilter)
+Router.route('/getAllDishes').get(dishController.getAllDishes)
 
 
 //Order routes
@@ -32,6 +34,9 @@ Router.route('/createOrder/:restaurantId').post(userAuth,orderController.createO
 Router.route('/updateOrder/:orderId').patch(authorizeOwner,orderController.updateOrderById)
 Router.route('/getAllOrdersByUser').get(userAuth,orderController.getAllOrdersByUser)
 Router.route('/restaurantSales/:restaurantId').get(orderController.restaurantSales)
+
+//Review routes
+Router.route('/addReview/:restaurantId').post(userAuth,reviewController.createReview)
 
 
 module.exports = Router

@@ -135,6 +135,15 @@ const deleteDish = async (req, res) => {
   }
 };
 
+const getAllDishes = async(req,res) => {
+  try {
+    const dishes = await Dish.find();
+    res.status(200).json(dishes);
+  } catch (error) {
+    res.status(500).json({msg:"internal server error"})
+  }
+}
+
 const searchDish = async (req, res) => {
   try {
     const { searchKey } = req.query;
@@ -196,5 +205,6 @@ module.exports = {
   updateMenu,
   searchDish,
   bestSellerFilter,
-  menuPriceFilter
+  menuPriceFilter,
+  getAllDishes
 };

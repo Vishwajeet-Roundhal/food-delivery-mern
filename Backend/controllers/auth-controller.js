@@ -111,7 +111,7 @@ const login = async (req, res) => {
         The Swiggy Team
       `;
 
-    await sendEmail(email, emailSubject, emailText);
+    // await sendEmail(email, emailSubject, emailText);
   } catch (error) {
     return res.status(500).json({ error: "Server error" });
   }
@@ -165,7 +165,7 @@ const forgotPassword = async (req, res) => {
       `http://${req.headers.host}/reset-password/${token}\n\n` +
       `If you did not request this, please ignore this email and your password will remain unchanged.\n`;
     
-    sendEmail(userEmail, subject, text);
+    // sendEmail(userEmail, subject, text);
 
     res.status(200).json({ msg: "Password reset link has been sent" });
   } catch (error) {
