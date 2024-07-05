@@ -70,7 +70,7 @@ function ProceedToCheckout({ total, deliveryAddress }) {
           }`}
           disabled={isProcessing}
         >
-          {isProcessing ? "Processing..." : "Proceed to Checkout"}
+          {isProcessing ? "Processing..." : "Pay now"}
         </button>
       )}
       {error && <p className="text-red-500 mt-2">{error}</p>}
