@@ -34,6 +34,7 @@ Router.route('/createOrder/:restaurantId').post(userAuth,orderController.createO
 Router.route('/updateOrder/:orderId').patch(authorizeOwner,orderController.updateOrderById)
 Router.route('/getAllOrdersByUser').get(userAuth,orderController.getAllOrdersByUser)
 Router.route('/restaurantSales/:restaurantId').get(orderController.restaurantSales)
+Router.route('/getOrdersByRestaurant/:restaurantId').get(orderController.getRestaurantAllOrders)
 
 //Review routes
 Router.route('/addReview/:restaurantId').post(userAuth,reviewController.createReview)

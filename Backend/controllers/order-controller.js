@@ -98,7 +98,7 @@ const updateOrderById = async (req, res) => {
 const getRestaurantAllOrders = async (req, res) => {
   try {
     const restaurantId = req.params.restaurantId;
-    const orders = await Order.find({ restaurant: restaurantId });
+    const orders = await Order.find({ restaurant: restaurantId }).populate('user');
     if (!orders) return res.status(500).json({ msg: "internal server error" });
 
     res.status(200).json(orders);
